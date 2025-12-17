@@ -1,129 +1,95 @@
 @extends('layouts.sidebar')
 
+@section('title', 'Edit Pengukuran')
+
 @section('content')
-<div class="bg-white shadow-lg rounded-xl p-6 border border-purple-100">
-    <div class="flex items-center mb-6">
-        <svg class="w-8 h-8 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-        </svg>
-        <h2 class="text-2xl font-bold text-purple-800">Edit Data Pengukuran Balita</h2>
+<div class="space-y-6">
+    <!-- Header -->
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Edit Pengukuran</h1>
+        <p class="text-gray-500 text-sm">Perbarui data pengukuran balita</p>
     </div>
 
     @if(session('success'))
-        <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-            {{ session('success') }}
-        </div>
+        <div class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('pengukuran.update', $pengukuran->id_pengukuran) }}" method="POST">
-        @csrf
-        @method('PUT')
+    <div class="bg-white rounded-xl shadow p-6">
+        <form action="{{ route('pengukuran.update', $pengukuran->id_pengukuran) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Pilih Balita --}}
-            <div>
-                <label for="id_balita" class="block text-sm font-semibold text-gray-700 mb-2">Pilih Balita</label>
-                <select name="id_balita" id="id_balita" class="w-full px-4 py-2.5 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
-                    <option value="">-- Pilih balita yang akan diukur --</option>
-                    @foreach($balitas as $balita)
-                        <option value="{{ $balita->id_balita }}" {{ $balita->id_balita == $pengukuran->id_balita ? 'selected' : '' }}>
-                            {{ $balita->nama_balita }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Pilih Balita -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Pilih Balita *</label>
+                    <select name="id_balita" id="id_balita" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" required>
+                        <option value="">-- Pilih balita --</option>
+                        @foreach($balitas as $balita)
+                            <option value="{{ $balita->id_balita }}" {{ $balita->id_balita == $pengukuran->id_balita ? 'selected' : '' }}>
+                                {{ $balita->nama_balita }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-            {{-- Tanggal Pengukuran --}}
-            <div>
-                <label for="tanggal_pengukuran" class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Pengukuran</label>
-                <input type="date" name="tanggal_pengukuran" id="tanggal_pengukuran" 
-                       value="{{ $pengukuran->tanggal_pengukuran }}"
-                       class="w-full px-4 py-2.5 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
-            </div>
+                <!-- Tanggal Pengukuran -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Tanggal Pengukuran *</label>
+                    <input type="date" name="tanggal_pengukuran" id="tanggal_pengukuran" value="{{ $pengukuran->tanggal_pengukuran }}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" required>
+                </div>
 
-            {{-- Jenis Kelamin (readonly) --}}
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Kelamin</label>
-                <input type="text" id="jenis_kelamin" class="w-full px-4 py-2.5 border border-purple-200 rounded-lg bg-purple-50" readonly>
-            </div>
+                <!-- Jenis Kelamin (readonly) -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Jenis Kelamin</label>
+                    <input type="text" id="jenis_kelamin" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm" readonly>
+                </div>
 
-            {{-- Usia (readonly, otomatis hitung dari tgl lahir) --}}
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Usia</label>
-                <input type="text" id="usia" name="usia_bulan" value="{{ $pengukuran->usia_bulan }}" class="w-full px-4 py-2.5 border border-purple-200 rounded-lg bg-purple-50" readonly>
-                <small class="text-gray-500">Dalam bulan</small>
-            </div>
+                <!-- Usia (readonly) -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Usia (bulan)</label>
+                    <input type="number" id="usia" name="usia_bulan" value="{{ $pengukuran->usia_bulan }}" class="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm" readonly min="12">
+                    <p class="text-xs text-gray-400 mt-1">Min: 12 bulan (1 tahun)</p>
+                </div>
 
-            {{-- Berat Badan --}}
-            <div>
-                <label for="berat_badan" class="block text-sm font-semibold text-gray-700 mb-2">Berat Badan</label>
-                <div class="relative">
-                    <input type="number" step="0.1" name="berat_badan" id="berat_badan" 
-                           value="{{ $pengukuran->berat_badan }}"
-                           class="w-full px-4 py-2.5 pr-12 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                           placeholder="0.0">
-                    <span class="absolute right-3 top-2.5 text-gray-500">kg</span>
+                <!-- Berat Badan -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Berat Badan (kg) *</label>
+                    <input type="number" step="0.1" name="berat_badan" id="berat_badan" value="{{ $pengukuran->berat_badan }}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" min="1" max="50" required onkeydown="return event.key !== '-' && event.key !== 'e'">
+                </div>
+
+                <!-- Tinggi Badan -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Tinggi Badan (cm) *</label>
+                    <input type="number" step="0.1" name="tinggi_badan" id="tinggi_badan" value="{{ $pengukuran->tinggi_badan }}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" min="30" max="150" required onkeydown="return event.key !== '-' && event.key !== 'e'">
+                </div>
+
+                <!-- Lingkar Kepala -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Lingkar Kepala (cm) *</label>
+                    <input type="number" step="0.1" name="lingkar_kepala" id="lingkar_kepala" value="{{ $pengukuran->lingkar_kepala }}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" min="20" max="60" required onkeydown="return event.key !== '-' && event.key !== 'e'">
+                </div>
+
+                <!-- LILA -->
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">LILA (cm) *</label>
+                    <input type="number" step="0.1" name="lila" id="lila" value="{{ $pengukuran->lila }}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 text-sm" min="5" max="30" required onkeydown="return event.key !== '-' && event.key !== 'e'">
                 </div>
             </div>
 
-            {{-- Tinggi Badan --}}
-            <div>
-                <label for="tinggi_badan" class="block text-sm font-semibold text-gray-700 mb-2">Tinggi Badan</label>
-                <div class="relative">
-                    <input type="number" step="0.1" name="tinggi_badan" id="tinggi_badan" 
-                           value="{{ $pengukuran->tinggi_badan }}"
-                           class="w-full px-4 py-2.5 pr-12 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                           placeholder="0.0">
-                    <span class="absolute right-3 top-2.5 text-gray-500">cm</span>
-                </div>
+            <!-- Buttons -->
+            <div class="flex justify-between mt-6">
+                <a href="{{ route('pengukuran.index') }}" class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">
+                    ← Kembali
+                </a>
+                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 text-sm">
+                    Update
+                </button>
             </div>
-
-            {{-- Lingkar Kepala --}}
-            <div>
-                <label for="lingkar_kepala" class="block text-sm font-semibold text-gray-700 mb-2">Lingkar Kepala</label>
-                <div class="relative">
-                    <input type="number" step="0.1" name="lingkar_kepala" id="lingkar_kepala" 
-                           value="{{ $pengukuran->lingkar_kepala }}"
-                           class="w-full px-4 py-2.5 pr-12 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                           placeholder="0.0">
-                    <span class="absolute right-3 top-2.5 text-gray-500">cm</span>
-                </div>
-            </div>
-
-            {{-- LiLA --}}
-            <div>
-                <label for="lila" class="block text-sm font-semibold text-gray-700 mb-2">Lingkar Lengan Atas (LiLA)</label>
-                <div class="relative">
-                    <input type="number" step="0.1" name="lila" id="lila" 
-                           value="{{ $pengukuran->lila }}"
-                           class="w-full px-4 py-2.5 pr-12 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                           placeholder="0.0">
-                    <span class="absolute right-3 top-2.5 text-gray-500">cm</span>
-                </div>
-            </div>
-        </div>
-
-        {{-- Tombol --}}
-        <div class="flex justify-between mt-8">
-            <a href="{{ route('pengukuran.index') }}" 
-               class="bg-gray-500 text-white px-6 py-2.5 rounded-lg hover:bg-gray-600 transition-colors duration-200 inline-flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Kembali
-            </a>
-            <button type="submit" 
-                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2.5 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 inline-flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                Update Data
-            </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
-{{-- Script untuk autofill jenis kelamin & usia --}}
 <script>
     document.getElementById('id_balita').addEventListener('change', function() {
         let balitaId = this.value;
@@ -131,13 +97,13 @@
             fetch(`/api/balita/${balitaId}`)
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById('jenis_kelamin').value = data.jenis_kelamin;
-                    document.getElementById('usia').value = data.usia_bulan;
+                    document.getElementById('jenis_kelamin').value = data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
+                    document.getElementById('usia').value = Math.max(12, Math.floor(data.usia_bulan));
                 });
         }
     });
 
-    // Trigger on page load if balita is already selected
+    // Trigger on page load
     if(document.getElementById('id_balita').value) {
         document.getElementById('id_balita').dispatchEvent(new Event('change'));
     }

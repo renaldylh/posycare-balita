@@ -10,7 +10,8 @@ class Pengukuran extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'id_balita','id_user','usia_bulan','berat_badan','tinggi_badan','lingkar_kepala','lila'
+        'id_balita','id_user','usia_bulan','berat_badan','tinggi_badan','lingkar_kepala','lila',
+        'status_gizi_ml','bmi','rekomendasi','tanggal_pengukuran'
     ];
 
     public function balita()
