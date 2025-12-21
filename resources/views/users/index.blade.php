@@ -59,7 +59,7 @@
                             {{ ucfirst($user->role ?? 'user') }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 text-gray-500">{{ $user->created_at->format('d/m/Y') }}</td>
+                    <td class="px-4 py-3 text-gray-500">{{ $user->created_at ? $user->created_at->format('d/m/Y') : '-' }}</td>
                     <td class="px-4 py-3 text-center">
                         <div class="flex justify-center gap-2 text-xs">
                             <a href="{{ route('users.edit', $user->id) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
