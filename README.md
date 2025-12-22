@@ -1,141 +1,88 @@
-# PosyCare Balita - Intelligent Posyandu Management System
+# PosyCare Balita - Sistem Pakar Manajemen Posyandu
 
-PosyCare Balita is a comprehensive management system designed for Posyandu (Integrated Healthcare Center) in Indonesia, specifically focused on monitoring the growth and nutritional status of toddlers (balita). The system integrates a robust web application built with Laravel 12 and an intelligent Machine Learning component developed in Python to provide real-time nutritional status predictions based on anthropometric measurements.
+PosyCare Balita adalah solusi digital terpadu untuk Posyandu yang menggabungkan manajemen data balita dengan teknologi kecerdasan buatan (AI) untuk pemantauan status gizi secara real-time.
 
-## Project Overview
+## Arsitektur Sistem
 
-The primary objective of this project is to digitize and enhance the data management process in Posyandu. By leveraging Machine Learning technology, PosyCare Balita assists healthcare cadres in early detection of malnutrition, stunting, and other growth issues using accurate data analysis. The system provides an intuitive interface for managing toddler records, recording periodic measurements, and generating detailed health reports.
+Aplikasi ini menggunakan arsitektur *hybrid* yang menghubungkan keandalan Laravel untuk backend/frontend dengan ketepatan Python untuk analisis data.
 
-## System Architecture
+```mermaid
+graph TD
+    User([Pengguna / Kader]) <-->|Akses Web| Laravel[("Laravel 12 (Web App)")]
+    Laravel <-->|Manajemen Data| DB[(MySQL Database)]
+    Laravel <-->|Request Prediksi| Python[("Python Flask API (ML Service)")]
+    Python <-->|Load Model| Model[[Random Forest Model]]
+    
+    subgraph Core Features
+        Laravel
+        DB
+    end
 
-The application utilizes a hybrid architecture combining a high-performance PHP framework with a dedicated Python data science service:
+    subgraph Intelligence Layer
+        Python
+        Model
+    end
+```
 
-- **Web Application (Backend & Frontend)**: Built on **Laravel 12** (PHP 8.2+), serving as the core interface for users, data management, and business logic.
-- **Machine Learning Service**: A **Python Flask API** that hosts a trained Random Forest Classifier model. This service processes anthropometric data (Age, Gender, Weight, Height, Head Circumference, and Upper Arm Circumference) to predict nutritional status.
-- **Integration**: The Laravel application communicates with the Python Flask service via HTTP requests to retrieve prediction results seamlessly.
+- **Web App**: Laravel 12 (PHP) sebagai antarmuka utama.
+- **ML Service**: Python Flask API untuk prediksi status gizi.
+- **Database**: MySQL untuk penyimpanan data terpusat.
 
-## Key Features
+## Fitur Unggulan
 
-### 1. Dashboard and Analytics
-- Provides a centralized view of key metrics.
-- Displays summaries of registered toddlers and recent activities.
+- **Dashboard**: Ringkasan data posyandu dan aktivitas terkini.
+- **Manajemen Balita**: Pencatatan lengkap data demografis balita.
+- **Pencatatan Pengukuran**: Monitor BB, TB, Lingkar Kepala, dan LILA secara berkala.
+- **Prediksi Gizi Cerdas**: Analisis otomatis status gizi (Normal/Buruk) menggunakan Machine Learning saat input data.
+- **Laporan Komprehensif**: Ekspor data dan laporan posyandu siap cetak.
 
-### 2. Balita Data Management
-- Complete CRUD (Create, Read, Update, Delete) functionality for toddler profiles.
-- Stores essential demographic data including name, date of birth, gender, and parents' details.
+## Prasyarat Teknis
 
-### 3. Anthropometric Measurements (Pengukuran)
-- Records periodic health measurements:
-  - Weight (Berat Badan)
-  - Height (Tinggi Badan)
-  - Head Circumference (Lingkar Kepala)
-  - Upper Arm Circumference (LILA)
-- Tracks historical growth data for each child.
+- PHP >= 8.2 & Composer
+- Python >= 3.8 & PIP
+- Node.js & NPM
+- MySQL / MariaDB
 
-### 4. Intelligent Nutritional Prediction (Prediksi Gizi)
-- **Real-time Analysis**: Automatically calculates nutritional status upon data entry using the integrated Python ML model.
-- **Multi-parameter Assessment**: Considers multiple variables simultaneously for high accuracy.
-- **Status Classification**: Categorizes health status (e.g., Gizi Normal, Gizi Buruk) and provides probability scores.
-- **BMI Calculation**: Auto-calculates Body Mass Index (BMI).
+## Panduan Instalasi Cepat
 
-### 5. Dataset Management
-- Allows management of training datasets used for the Machine Learning model.
-- Supports dataset export features for further analysis or model retraining.
-
-### 6. Comprehensive Reporting (Laporan)
-- Generates printable reports for Posyandu records.
-- Supports exporting data in various formats for offline archiving.
-
-### 7. User Management
-- Role-based access control to ensure secure data handling.
-- Management of administrator and cadre accounts.
-
-## Technical Requirements
-
-To run this project, ensure your environment meets the following specifications:
-
-- **PHP**: Version 8.2 or higher.
-- **Composer**: For PHP dependency management.
-- **Node.js & NPM**: For frontend asset compilation.
-- **Python**: Version 3.8 or higher.
-- **Database**: MySQL or MariaDB.
-- **Web Server**: Apache or Nginx (or Laravel Sail/Artisan serve for local development).
-
-## Installation and Setup Guide
-
-Follow these steps to set up the project locally:
-
-1.  **Clone the Repository**
-    Clone the project files to your local machine.
-
-2.  **Install PHP Dependencies**
-    Navigate to the project root and run:
+1.  **Clone & Setup Backend**
     ```bash
     composer install
-    ```
-
-3.  **Setup Environment Variables**
-    Copy the example environment file and configure your database settings:
-    ```bash
     cp .env.example .env
-    ```
-    Update the `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` in the `.env` file.
-
-4.  **Generate Application Key**
-    ```bash
     php artisan key:generate
-    ```
-
-5.  **Run Database Migrations**
-    Ensure your database server is running, then execute:
-    ```bash
     php artisan migrate
     ```
 
-6.  **Install Python Dependencies**
-    Navigate to the `python_api` directory and install the required libraries:
+2.  **Setup Machine Learning**
     ```bash
     cd python_api
     pip install -r requirements.txt
-    cd ..
     ```
 
-7.  **Install Frontend Dependencies**
+3.  **Setup Frontend**
     ```bash
-    npm install
-    npm run build
+    npm install && npm run build
     ```
 
-## Running the Application
+## Menjalankan Aplikasi
 
-To start the application, you need to run both the Laravel server and the Python API.
+Jalankan kedua servis berikut di terminal terpisah:
 
-1.  **Start the Python API**
-    You can use the provided batch script or run it manually:
-    ```bash
-    # Using script (Windows)
-    start_flask.bat
-    
-    # Or manual execution
-    cd python_api
-    python predict_api.py
-    ```
-    The API will start on `http://localhost:5000`.
+**1. Machine Learning API** (Port 5000)
+```bash
+# Windows (Script)
+start_flask.bat
+# Atau Manual
+python python_api/predict_api.py
+```
 
-2.  **Start the Laravel Server**
-    Open a new terminal and run:
-    ```bash
-    php artisan serve
-    ```
-    The web application will be accessible at `http://localhost:8000`.
+**2. Web Server** (Port 8000)
+```bash
+php artisan serve
+```
 
-## Model Information
+Akses aplikasi melalui: `http://localhost:8000`
 
-The core of the prediction module is a **Random Forest Classifier**.
-- **Input Features**: Age (months), Gender, Weight (kg), Height (cm), Head Circumference (cm), Upper Arm Circumference (cm).
-- **Model File**: Located at `storage/app/models/status_gizi_model.joblib`.
-- **Accuracy**: The model is trained on validated datasets to ensure reliable predictions for early screening purposes.
+## Lisensi
 
-## License
-
-The PosyCare Balita web application is open-sourced software licensed under the MIT license.
+Software ini dilisensikan di bawah [MIT License](https://opensource.org/licenses/MIT).
